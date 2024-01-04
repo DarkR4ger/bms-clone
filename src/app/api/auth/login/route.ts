@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import type { UserData } from "@/types";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+const { SECRET_KEY } = process.env;
 
 export async function POST(req: NextRequest) {
   const formData = (await req.formData()) as unknown as Iterable<
@@ -36,10 +39,16 @@ export async function POST(req: NextRequest) {
         { status: 401 },
       );
     }
+    const token = jwt.sign(
+      { userId: user.id, emailId: user.email },
+      SECRET_KEY,
+      { expiresIn: "1d" },
+    );
 
     return NextResponse.json({
       success: true,
       message: "User Logged In",
+      token: token,
     });
   } catch (err) {
     return NextResponse.json(

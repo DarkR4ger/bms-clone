@@ -10,10 +10,15 @@ import type { UserFormElements } from "@/types";
 import { NextResponse } from "next/server";
 import { Chip } from "@nextui-org/chip";
 import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/lib/reduxHook";
+import store from "@/redux/store";
+import { setLoading } from "@/redux/loaderSlice";
+import { JwtPayload } from "jsonwebtoken";
 
 interface LoginResponse extends NextResponse {
   success: boolean;
   message: string;
+  token: string;
 }
 
 type SetState<T> = Dispatch<SetStateAction<T>>;
@@ -22,6 +27,9 @@ export default function LoginPage() {
   const [success, setSuccess] = useState(false);
   const [failure, setFailure] = useState(false);
   const [message, setMessage] = useState("");
+
+  const isLoading = useAppSelector((state) => state.loader.loading);
+  const dispatch = useAppDispatch();
 
   const router = useRouter();
   const timeout = (
@@ -37,6 +45,7 @@ export default function LoginPage() {
   };
   const onSubmit = async (event: FormEvent<UserFormElements>) => {
     event.preventDefault();
+    dispatch(setLoading(true));
     const formData = new FormData(event.currentTarget);
     try {
       const response = await fetch("/api/auth/login", {
@@ -45,14 +54,18 @@ export default function LoginPage() {
       });
       const data: LoginResponse = await response.json();
       if (data.success) {
+        localStorage.setItem("token", data.token);
+        dispatch(setLoading(false));
         router.push("/");
         setMessage(data.message);
         timeout(setSuccess, true, 2000, false);
       } else {
+        dispatch(setLoading(false));
         setMessage(data.message);
         timeout(setFailure, true, 2000, false);
       }
     } catch (err) {
+      dispatch(setLoading(false));
       setMessage("Something went wrong, please try again");
       timeout(setFailure, true, 2000, false);
     }
@@ -100,6 +113,7 @@ export default function LoginPage() {
             </div>
             <Button
               fullWidth
+              isLoading={isLoading}
               color="primary"
               className="font-semibold text-sm md:text-lg"
               type="submit"

@@ -9,6 +9,8 @@ import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import type { UserFormElements } from "@/types";
 import { NextResponse } from "next/server";
 import { Chip } from "@nextui-org/react";
+import { useAppDispatch, useAppSelector } from "@/lib/reduxHook";
+import { setLoading } from "@/redux/loaderSlice";
 
 interface RegisterResponse extends NextResponse {
   success: boolean;
@@ -21,6 +23,9 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const [failure, setFailure] = useState(false);
   const [message, setMessage] = useState("");
+
+  const isLoading = useAppSelector((state) => state.loader.loading);
+  const dispatch = useAppDispatch();
 
   const timeout = (
     setState: SetState<boolean>,
@@ -36,6 +41,7 @@ export default function RegisterPage() {
 
   const onSubmit = async (event: FormEvent<UserFormElements>) => {
     event.preventDefault();
+    dispatch(setLoading(true));
     const formData = new FormData(event.currentTarget);
     try {
       const response = await fetch("/api/auth/register", {
@@ -45,13 +51,16 @@ export default function RegisterPage() {
       const data: RegisterResponse = await response.json();
 
       if (data.success) {
+        dispatch(setLoading(false));
         setMessage(data.message);
         timeout(setSuccess, true, 2000, false);
       } else {
+        dispatch(setLoading(false));
         setMessage(data.message);
         timeout(setFailure, true, 2000, false);
       }
     } catch (err) {
+      dispatch(setLoading(false));
       setMessage("Something went wrong, please try again");
       timeout(setFailure, true, 2000, false);
     }
@@ -110,6 +119,7 @@ export default function RegisterPage() {
             </div>
             <Button
               fullWidth
+              isLoading={isLoading}
               color="primary"
               className="font-semibold text-sm md:text-lg"
               type="submit"
