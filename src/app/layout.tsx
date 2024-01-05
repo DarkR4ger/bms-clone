@@ -20,12 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={inter.className}>
-        <StoreProvider>
-          <NextProviders>
+        <NextProviders>
+          <StoreProvider>
             <Navbar />
-            <main className="">{children}</main>
-          </NextProviders>
-        </StoreProvider>
+            {children}
+          </StoreProvider>
+        </NextProviders>
       </body>
     </html>
   );

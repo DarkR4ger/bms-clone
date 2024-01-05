@@ -3,6 +3,7 @@ import prisma from "@/lib/db";
 import type { UserData } from "@/types";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 const { SECRET_KEY } = process.env;
 
@@ -44,6 +45,8 @@ export async function POST(req: NextRequest) {
       SECRET_KEY,
       { expiresIn: "1d" },
     );
+
+    cookies().set("token", token);
 
     return NextResponse.json({
       success: true,

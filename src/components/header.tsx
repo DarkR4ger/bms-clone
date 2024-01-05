@@ -25,7 +25,7 @@ export const Navbar = () => {
   );
 
   return (
-    <header className="container flex flex-col justify-center">
+    <div className="container flex flex-col justify-center">
       <NextUiNavbar maxWidth="full">
         <NavbarContent className="gap-4" justify="start">
           <NavbarBrand className="max-w-fit">
@@ -58,6 +58,6 @@ export const Navbar = () => {
           <NavbarItem className="w-full">{searchInput}</NavbarItem>
         </NavbarContent>
       </NextUiNavbar>
-    </header>
+    </div>
   );
 };
