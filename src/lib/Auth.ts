@@ -8,6 +8,7 @@ interface AuthenticationRespone {
     id: string;
     name: string;
     email: string;
+    isAdmin: boolean;
   };
 }
 
@@ -23,7 +24,7 @@ export default async function Authentication(): Promise<AuthenticationRespone> {
   if (!token) {
     return {
       success: false,
-      data: { id: "", name: "", email: "" },
+      data: { id: "", name: "", email: "", isAdmin: false },
     };
   }
 
@@ -38,13 +39,14 @@ export default async function Authentication(): Promise<AuthenticationRespone> {
       name: true,
       email: true,
       password: false,
+      isAdmin: true,
     },
   });
 
   if (!user) {
     return {
       success: false,
-      data: { id: "", name: "", email: "" },
+      data: { id: "", name: "", email: "", isAdmin: false },
     };
   }
 

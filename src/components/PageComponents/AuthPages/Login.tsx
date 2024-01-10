@@ -21,7 +21,7 @@ interface LoginResponse extends NextResponse {
 
 type SetState<T> = Dispatch<SetStateAction<T>>;
 
-export default function LoginPage() {
+export const LoginPage = () => {
   const [success, setSuccess] = useState(false);
   const [failure, setFailure] = useState(false);
   const [message, setMessage] = useState("");
@@ -53,7 +53,8 @@ export default function LoginPage() {
       const data: LoginResponse = await response.json();
       if (data.success) {
         dispatch(setLoading(false));
-        router.push("/");
+        router.refresh();
+        router.push("/dashboard");
         setMessage(data.message);
         timeout(setSuccess, true, 2000, false);
       } else {
@@ -132,4 +133,4 @@ export default function LoginPage() {
       </Card>
     </section>
   );
-}
+};

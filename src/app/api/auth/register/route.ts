@@ -1,13 +1,13 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/db";
 import bcrypt from "bcrypt";
-import type { UserData } from "@/types";
+import type { RegisterData } from "@/types";
 
 export async function POST(req: NextRequest) {
   const formData = (await req.formData()) as unknown as Iterable<
-    [UserData, FormDataEntryValue]
+    [RegisterData, FormDataEntryValue]
   >;
-  const body: UserData = Object.fromEntries(formData);
+  const body: RegisterData = Object.fromEntries(formData);
   try {
     const userExists = await prisma.user.findUnique({
       where: {
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const hash = await bcrypt.hash(body.password, salt);
     body.password = hash;
 
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         name: body.name,
         email: body.email,

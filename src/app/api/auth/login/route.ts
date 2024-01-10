@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
-import type { UserData } from "@/types";
+import type { LoginData } from "@/types";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const { SECRET_KEY } = process.env;
 
 export async function POST(req: NextRequest) {
   const formData = (await req.formData()) as unknown as Iterable<
-    [UserData, FormDataEntryValue]
+    [LoginData, FormDataEntryValue]
   >;
 
-  const body: UserData = Object.fromEntries(formData);
+  const body: LoginData = Object.fromEntries(formData);
 
   try {
     const user = await prisma.user.findUnique({
